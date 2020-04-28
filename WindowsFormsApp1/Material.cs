@@ -24,7 +24,8 @@ namespace WindowsFormsApp1
 		}
 		public override string ToString()
 		{
-			return name + " (" + code + ")";
+			//return name + " (" + code + ")";
+			return name;
 		}
 
 	}

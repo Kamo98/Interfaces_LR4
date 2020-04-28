@@ -17,6 +17,7 @@ namespace WindowsFormsApp1
 	{
 		List<Product> products;
 		List<Material> materials;
+		Dictionary<string, string> mater2key = new Dictionary<string, string>();
 
 		int countMaterials = 0;
 		List<string> units = new List<string>() { "кг", "г", "мл", "л" };
@@ -31,11 +32,29 @@ namespace WindowsFormsApp1
 		{
 			InitializeComponent();
 			loadHandbooks();
+
+			init_tableMaterial();
+
 			add_product();
 
 			//export_to_excel();
 
 		}
+
+
+		private void init_tableMaterial()
+		{
+			//dgv_Mateials.EditingControlShowing += new DataGridViewEditingControlShowingEventHandler(dgv_Mateials_EditingControlShowing);
+
+			foreach (string pr in units)
+				ColUnit.Items.Add(pr);
+
+			foreach (Material pr in materials)
+				ColNameMaterial.Items.Add(pr.ToString());
+			dgv_Mateials.RowHeadersVisible = false;
+			dgv_Result.RowHeadersVisible = false;
+		}
+
 
 
 		private void export_to_excel()
@@ -46,7 +65,90 @@ namespace WindowsFormsApp1
 
 			Excel.Worksheet worksheet = excelApp.Workbooks[1].Worksheets[1];
 
-			worksheet.Cells[5, 'H' - 'A' + 1] = "fdgfd";
+			worksheet.Cells[6, "A"] = textBox1.Text;
+			worksheet.Cells[8, "A"] = comboBox1.Text;
+			worksheet.Cells[13, "AW"] = textBox2.Text;
+			worksheet.Cells[21, "CC"] = comboBox2.Text;
+			worksheet.Cells[15, "CB"] = comboBox3.Text;
+			worksheet.Cells[13, "BW"] = textBox3.Text;
+
+			//worksheet.Cells[13, "BW"] = dateTimePicker2.Text;
+			worksheet.Cells[13, "BE"] = dateTimePicker1.Text;
+
+
+
+			for (int i = 0; i < dgv_Mateials.RowCount; i++)
+			{
+				if (dgv_Mateials.Rows[i].Cells[0].Value != null)
+					worksheet.Cells[37 + i, "D"] = dgv_Mateials.Rows[i].Cells[0].Value.ToString();
+				if (dgv_Mateials.Rows[i].Cells[1].Value != null)
+					worksheet.Cells[37 + i, "L"] = dgv_Mateials.Rows[i].Cells[1].Value.ToString();
+				if (dgv_Mateials.Rows[i].Cells[2].Value != null)
+					worksheet.Cells[37 + i, "O"] = dgv_Mateials.Rows[i].Cells[2].Value.ToString();
+				worksheet.Cells[37 + i, "R"] = "163";
+			}
+			
+
+
+			
+			//Заполняем таблицы в Excel
+			int j = 'U' - 'A' + 1;
+
+			for (int i = 0; i < tabProducts.TabCount; i++)
+			{
+				string prod = ((ComboBox)tabProducts.TabPages[i].Controls.Find("cb_nameProduct", true)[0]).Text;
+				string[] prod1 = prod.Split('(');
+				string nameProd = prod1[0].Trim();
+				string keyProd = prod1[1].Substring(0, prod1[1].Length - 1);
+
+				worksheet.Cells[21, j] = nameProd;
+				worksheet.Cells[22, j] = keyProd;
+
+
+				worksheet.Cells[24, j] = 1;
+				worksheet.Cells[25, j] = ((TextBox)tabProducts.TabPages[i].Controls.Find("tb_Mass", true)[0]).Text;
+				worksheet.Cells[26, j] = ((TextBox)tabProducts.TabPages[i].Controls.Find("tb_Count", true)[0]).Text;
+				worksheet.Cells[27, j] = ((TextBox)tabProducts.TabPages[i].Controls.Find("tb_Count", true)[0]).Text;
+				worksheet.Cells[28, j] = ((TextBox)tabProducts.TabPages[i].Controls.Find("tb_Price", true)[0]).Text;
+				worksheet.Cells[29, j] = ((TextBox)tabProducts.TabPages[i].Controls.Find("tb_Sum", true)[0]).Text;
+				worksheet.Cells[30, j] = ((TextBox)tabProducts.TabPages[i].Controls.Find("tb_Fact", true)[0]).Text;
+
+
+				DataGridView dgvMatPr = (DataGridView)tabProducts.TabPages[i].Controls.Find("dgv_MaterialsPr", true)[0];
+
+				for (int k = 0; k < dgv_Mateials.RowCount; k++)
+				{
+					if (dgvMatPr.Rows[k].Cells[0].Value != null && dgvMatPr.Rows[k].Cells[1].Value != null)
+					{
+						worksheet.Cells[37 + k, j] = dgvMatPr.Rows[k].Cells[0].Value.ToString();
+						worksheet.Cells[37 + k, j + 2] = dgvMatPr.Rows[k].Cells[1].Value.ToString();
+					}
+				}
+
+					//break;
+				j += 5;
+			}
+
+
+
+			for (int i = 0; i < dgv_Result.RowCount; i++)
+			{
+				if (dgv_Result.Rows[i].Cells[1].Value != null)
+					worksheet.Cells[37 + i, "BO"] = dgv_Result.Rows[i].Cells[1].Value.ToString();
+
+
+				if (dgv_Result.Rows[i].Cells[2].Value != null)
+					worksheet.Cells[37 + i, "BT"] = dgv_Result.Rows[i].Cells[2].Value.ToString();
+
+
+				if (dgv_Result.Rows[i].Cells[3].Value != null)
+					worksheet.Cells[37 + i, "BZ"] = dgv_Result.Rows[i].Cells[3].Value.ToString();
+
+
+				if (dgv_Result.Rows[i].Cells[4].Value != null)
+					worksheet.Cells[37 + i, "CF"] = dgv_Result.Rows[i].Cells[4].Value.ToString();
+			}
+
 
 			excelApp.Visible = true;
 			excelApp.UserControl = true;
@@ -55,83 +157,23 @@ namespace WindowsFormsApp1
 
 		private void add_material()
 		{
-			int posY = heightMaterial * countMaterials + startPosMaterial;
-
-			//Label labelMaterial = new System.Windows.Forms.Label();
-			//labelMaterial.AutoSize = true;
-			//labelMaterial.Location = new System.Drawing.Point(5, 10 + posY);
-			//labelMaterial.Text = "Сырьё";
-
-			ComboBox cb_nameMaterial = new System.Windows.Forms.ComboBox();
-			cb_nameMaterial.Location = new System.Drawing.Point(20, posY + 30);
-			cb_nameMaterial.Name = "cb_nameMaterial_" + countMaterials;
-			cb_nameMaterial.Size = new System.Drawing.Size(150, 21);
-			cb_nameMaterial.TabIndex = 1 * countMaterials;
-			cb_nameMaterial.SelectedIndexChanged += new System.EventHandler(this.cb_nameMaterial_SelectedIndexChanged);
-			foreach (Material pr in materials)
-				cb_nameMaterial.Items.Add(pr.ToString());			
+			DataGridViewRow row = new DataGridViewRow();
+			dgv_Mateials.Rows.Add(row);
 
 
 			for (int i = 0; i < tabProducts.TabCount; i++)
 				copy_material(i, countMaterials);
-
-			panelMaterials.Controls.Add(cb_nameMaterial);
+			
 			countMaterials++;
-
-			DataGridViewRow row = new DataGridViewRow();
-			row.Height = heightMaterial;
+			row = new DataGridViewRow();
 			dgv_Result.Rows.Add(row);
 		}
 
 		private void copy_material (int indexProduct, int indexMaterial)
 		{
-			int posY = heightMaterial * indexMaterial;
+			DataGridView dgv_Materials = (DataGridView)tabProducts.Controls.Find("dgv_MaterialsPr", true)[indexProduct];
 
-			Label labelNorm = new System.Windows.Forms.Label();
-			labelNorm.AutoSize = true;
-			labelNorm.Location = new System.Drawing.Point(20, posY + 10);
-			labelNorm.Text = "Норма";
-
-			TextBox tb_Norma = new System.Windows.Forms.TextBox();
-			tb_Norma.Location = new System.Drawing.Point(20, posY + 30);
-			tb_Norma.Name = "tb_Norma_" + indexProduct + "_" + countMaterials;
-			tb_Norma.Size = new System.Drawing.Size(100, 20);
-			tb_Norma.TabIndex = 3 * countMaterials;
-			tb_Norma.KeyPress += new KeyPressEventHandler(float_tb_validator);
-			tb_Norma.TextChanged += new EventHandler(tb_normMaterial_textChanged);
-
-			ComboBox cb_Unit = new System.Windows.Forms.ComboBox();
-			cb_Unit.Location = new System.Drawing.Point(160, posY + 30);
-			cb_Unit.Name = "cb_Unit_" + indexProduct + "_" + countMaterials;
-			cb_Unit.Size = new Size(50, 21);
-			cb_Unit.TabIndex = 4 * countMaterials;
-			foreach (string pr in units)
-				cb_Unit.Items.Add(pr);
-
-
-			Label labelTotal = new System.Windows.Forms.Label();
-			labelTotal.AutoSize = true;
-			labelTotal.Location = new System.Drawing.Point(270, posY + 10);
-			labelTotal.Text = "Всего";
-
-			TextBox tb_Total = new System.Windows.Forms.TextBox();
-			tb_Total.Location = new System.Drawing.Point(270, posY + 30);
-			tb_Total.Name = "tb_Total_" + indexProduct + "_" + countMaterials;
-			tb_Total.Size = new System.Drawing.Size(60, 20);
-			tb_Total.ReadOnly = true;
-			tb_Total.TabStop = false; //2 * countMaterials[product];
-
-
-			Control panelMaterial = tabProducts.Controls.Find("panel_materials", true)[indexProduct];
-			panelMaterial.Controls.Add(labelNorm);
-			panelMaterial.Controls.Add(tb_Norma);
-
-			panelMaterial.Controls.Add(cb_Unit);
-
-			panelMaterial.Controls.Add(labelTotal);
-			panelMaterial.Controls.Add(tb_Total);
-
-			//tabProducts.TabPages[indexProduct].Controls.Add(tb_Total);
+			dgv_Materials.Rows.Add();
 		}
 
 		private void add_product()
@@ -212,11 +254,11 @@ namespace WindowsFormsApp1
 			TextBox tb_Mass = new System.Windows.Forms.TextBox();
 			tb_Mass.Location = new System.Drawing.Point(180, 75);
 			tb_Mass.Name = "tb_Mass";
-			tb_Mass.ReadOnly = true;
+			//tb_Mass.ReadOnly = true;
 			tb_Mass.Size = new System.Drawing.Size(80, 20);
 			tb_Mass.TabStop = false;
 			tb_Mass.KeyPress += new KeyPressEventHandler(float_tb_validator);
-			tb_Mass.Text = "100";
+			//tb_Mass.Text = "100";
 
 			Label labelMassUnit = new System.Windows.Forms.Label();
 			labelMassUnit.AutoSize = true;
@@ -253,13 +295,51 @@ namespace WindowsFormsApp1
 			btn_Close.Click += new System.EventHandler(this.btn_CloseProduct_Click);
 
 
-			Panel panelMaterials = new Panel();
-			panelMaterials.Location = new Point(10, 110);
-			panelMaterials.Name = "panel_materials";
-			panelMaterials.AutoScroll = true;
-			panelMaterials.BorderStyle = BorderStyle.FixedSingle;
-			panelMaterials.Size = new Size(430, 370);
-			panelMaterials.Scroll += new ScrollEventHandler(this.panelMaterialsInProd_Scroll);
+
+
+			DataGridViewTextBoxColumn Col_Norma = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			DataGridViewComboBoxColumn Col_unit = new System.Windows.Forms.DataGridViewComboBoxColumn();
+			DataGridViewTextBoxColumn Col_sum = new System.Windows.Forms.DataGridViewTextBoxColumn();
+
+			// 
+			// Col_Norma
+			// 
+			Col_Norma.HeaderText = "Норма";
+			Col_Norma.Name = "Col_Norma";
+			Col_Norma.Width = 215;
+			// 
+			// Col_sum
+			// 
+			Col_sum.HeaderText = "Всего";
+			Col_sum.Name = "Col_sum";
+			Col_sum.ReadOnly = true;
+			Col_sum.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+			Col_sum.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+			Col_sum.Width = 185;
+
+			
+
+			DataGridView dgv_MaterialsPr_1 = new System.Windows.Forms.DataGridView();
+			dgv_MaterialsPr_1.Location = new Point(10, 121);
+			((System.ComponentModel.ISupportInitialize)(dgv_MaterialsPr_1)).BeginInit();
+			dgv_MaterialsPr_1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+			dgv_MaterialsPr_1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+			Col_Norma,
+			Col_sum});
+			dgv_MaterialsPr_1.Name = "dgv_MaterialsPr"; // + tabProducts.TabCount;
+			dgv_MaterialsPr_1.Size = new System.Drawing.Size(440, 384);
+			dgv_MaterialsPr_1.TabIndex = 125;
+			dgv_MaterialsPr_1.AllowUserToAddRows = false;
+			dgv_MaterialsPr_1.AllowUserToDeleteRows = false;
+			dgv_MaterialsPr_1.AllowUserToOrderColumns = false;
+			dgv_MaterialsPr_1.AllowUserToResizeColumns = false;
+			dgv_MaterialsPr_1.AllowUserToResizeRows = false;
+			
+			dgv_MaterialsPr_1.RowHeadersVisible = false;
+			dgv_MaterialsPr_1.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_MateialsPr_CellValueChanged);
+			//dgv_MaterialsPr_1.ColumnHeadersHeight = 40;
+			((System.ComponentModel.ISupportInitialize)(dgv_MaterialsPr_1)).EndInit();
+
 
 			newTabPage.Controls.Add(label1);
 			newTabPage.Controls.Add(cb_nameProduct);
@@ -282,7 +362,8 @@ namespace WindowsFormsApp1
 			newTabPage.Controls.Add(labelSumUnit);
 
 			newTabPage.Controls.Add(btn_Close);
-			newTabPage.Controls.Add(panelMaterials);
+			
+			newTabPage.Controls.Add(dgv_MaterialsPr_1);
 
 			newTabPage.ResumeLayout(false);
 			newTabPage.PerformLayout();
@@ -291,14 +372,10 @@ namespace WindowsFormsApp1
 
 			tabProducts.SelectedTab = newTabPage;
 
-			panelMaterials.VerticalScroll.Value = panelMaterials.VerticalScroll.Value;
+			//panelMaterials.VerticalScroll.Value = panelMaterials.VerticalScroll.Value;
 
 			for (int j = 0; j < countMaterials; j++)
 				copy_material(tabProducts.TabCount - 1, j);
-
-			//countMaterials.Add(0);
-			//add_material(countProd);
-			//countProd++;
 		}
 
 		private void loadHandbooks()
@@ -316,6 +393,10 @@ namespace WindowsFormsApp1
 			{
 				materials = (List<Material>)formatterProd.Deserialize(fs);
 			}
+
+			foreach (Material m in materials)
+				mater2key.Add(m.Name, m.Code);
+
 		}
 
 
@@ -364,6 +445,10 @@ namespace WindowsFormsApp1
 			}
 		}
 
+
+
+
+
 		private void btn_addProduct_Click(object sender, EventArgs e)
 		{
 			add_product();
@@ -371,7 +456,8 @@ namespace WindowsFormsApp1
 
 		private void btn_Save_Click(object sender, EventArgs e)
 		{
-			MessageBox.Show(((TextBox)panelProducts.Controls.Find("tb_Price_2", true)[0]).Text);
+			calculate();
+			export_to_excel();
 		}
 
 		private void btn_addMaterial_Click_1(object sender, EventArgs e)
@@ -407,118 +493,103 @@ namespace WindowsFormsApp1
 		//Изменение кол-ва продукта
 		private void tb_count_textChanged(object sender, EventArgs e)
 		{
-			//string name = ((TextBox)sender).Name;
-			//int iProd = Int32.Parse(name.Split('_')[2]);
+			TextBox tb_sum = (TextBox)tabProducts.SelectedTab.Controls.Find("tb_Sum", true)[0];
+			
+			int countPr;
+			Int32.TryParse(((TextBox)sender).Text, out countPr);
+			
 
-			//int countPr;
-			//Int32.TryParse(((TextBox)sender).Text, out countPr);
+			//Рассчёт стоимости
+			double price;
+			Double.TryParse(((TextBox)tabProducts.SelectedTab.Controls.Find("tb_Price", true)[0]).Text, out price);
 
-			//for (int i = 0; i < countMaterials[iProd]; i++)
-			//{
-			//	TextBox tbTotal = (TextBox)panelProducts.Controls.Find("tb_Total_" + iProd + "_" + i, true)[0];
-			//	double norma;
-			//	Double.TryParse(
-			//		((TextBox)panelProducts.Controls.Find("tb_Norma_" + iProd + "_" + i, true)[0]).Text,
-			//		out norma);
+			tb_sum.Text = (price * countPr).ToString();
+			
+			DataGridView dgvPr = (DataGridView)tabProducts.SelectedTab.Controls.Find("dgv_MaterialsPr", true)[0];
 
-			//	tbTotal.Text = (norma * countPr).ToString();
-			//}
-
-
-			////Рассчёт стоимости
-			//double price;
-			//Double.TryParse(((TextBox)panelProducts.Controls.Find("tb_Price_" + iProd, true)[0]).Text,
-			//	out price);
-
-			//TextBox tbSum = (TextBox)panelProducts.Controls.Find("tb_Sum_" + iProd, true)[0];
-			//tbSum.Text = (price * countPr).ToString();
+			for (int i = 0; i < dgvPr.RowCount; i++)
+			{
+				int norma = 0;
+				if (dgvPr.Rows[i].Cells[0].Value != null)
+					norma = Int32.Parse(dgvPr.Rows[i].Cells[0].Value.ToString());
+				dgvPr.Rows[i].Cells[1].Value = norma * countPr;
+			}
+			
 		}
 
+		
 
 		//Изменение цены продукта
 		private void tb_priceProd_textChanged(object sender, EventArgs e)
 		{
-			//string name = ((TextBox)sender).Name;
-			//int iProd = Int32.Parse(name.Split('_')[2]);
+			TextBox tb_sum = (TextBox)tabProducts.SelectedTab.Controls.Find("tb_Sum", true)[0];
+			
+			int countPr;
+			Int32.TryParse(((TextBox)tabProducts.SelectedTab.Controls.Find("tb_Count", true)[0]).Text, out countPr);
 
-			//int countPr;
-			//Int32.TryParse(((TextBox)panelProducts.Controls.Find("tb_Count_" + iProd, true)[0]).Text,
-			//	out countPr);
 
-			////Рассчёт стоимости
-			//double price;
-			//Double.TryParse(((TextBox)sender).Text, out price);
+			//Рассчёт стоимости
+			double price;
+			Double.TryParse(((TextBox)sender).Text, out price);
 
-			//TextBox tbSum = (TextBox)panelProducts.Controls.Find("tb_Sum_" + iProd, true)[0];
-			//tbSum.Text = (price * countPr).ToString();
+			tb_sum.Text = (price * countPr).ToString();
 		}
 
 		
-		//Изменение нормы сырья
-		private void tb_normMaterial_textChanged(object sender, EventArgs e)
+
+		private void dgv_MateialsPr_CellValueChanged(object sender, DataGridViewCellEventArgs e)
 		{
-			//string name = ((TextBox)sender).Name;
-			//int iP = Int32.Parse(name.Split('_')[2]);
-			//int jM = Int32.Parse(name.Split('_')[3]);
-
-			//double norma;
-			//Double.TryParse((((TextBox)sender)).Text, out norma);
-			//int countPr;
-			//Int32.TryParse(((TextBox)panelProducts.Controls.Find("tb_Count_" + iP, true)[0]).Text, out countPr);
-
-			//TextBox tbTotal = (TextBox)panelProducts.Controls.Find("tb_Total_" + iP + "_" + jM, true)[0];
-			//tbTotal.Text = (norma * countPr).ToString();
+			DataGridView dgv = (DataGridView)sender;
+			if (e.RowIndex >= 0 && e.RowIndex < dgv.RowCount)
+			{
+				if (e.ColumnIndex == 0 && dgv.Rows[e.RowIndex].Cells[0].Value != null)
+				{
+					string countS = ((TextBox)tabProducts.SelectedTab.Controls.Find("tb_Count", true)[0]).Text;
+					if (countS != "")
+					{
+						double norma = Double.Parse(dgv.Rows[e.RowIndex].Cells[0].Value.ToString());
+						int count = Int32.Parse(countS);
+						dgv.Rows[e.RowIndex].Cells[1].Value = norma * count;
+					}
+				}
+			}
 		}
 
+
+
+		//=================================
+		//Рассчёт
 		private void btn_Calc_Click(object sender, EventArgs e)
 		{
-			//for (int k = 0; k < dgv_Result.Rows.Count; k++)
-			//{
-			//	string material = dgv_Result.Rows[k].Cells[0].Value.ToString();
-			//	double curSum = 0.0;
-
-			//	for (int i = 0; i < countProd; i++)
-			//		for (int j = 0; j < countMaterials[i]; j++)
-			//		{
-			//			ComboBox cb = (ComboBox)panelProducts.Controls.Find("cb_nameMaterial_" + i + "_" + j, true)[0];
-			//			if (material == cb.Text)
-			//			{
-			//				double totalM;
-			//				Double.TryParse(((TextBox)panelProducts.Controls.Find("tb_Total_" + i + "_" + j, true)[0]).Text, out totalM);
-			//				curSum += totalM;
-			//			}
-			//		}
-
-			//	dgv_Result.Rows[k].Cells[1].Value = curSum;
-			//	dgv_Result.Rows[k].Cells[2].Value = Math.Round(curSum, 2);
-			//}
+			calculate();
 
 		}
 
-
-
-		//События скролов
-		private void panelMaterials_Scroll(object sender, ScrollEventArgs e)
+		private void calculate ()
 		{
-			for (int i = 0; i < tabProducts.TabCount; i++)
-				((Panel)tabProducts.TabPages[i].Controls.Find("panel_materials", true)[0]).VerticalScroll.Value = panelMaterials.VerticalScroll.Value;
-			dgv_Result.FirstDisplayedScrollingRowIndex = panelMaterials.VerticalScroll.Value / heightMaterial;
-		}
+			for (int i = 0; i < dgv_Mateials.RowCount; i++)
+			{
+				double totalCount = 0.0;
+				for (int j = 0; j < tabProducts.TabCount; j++)
+				{
+					DataGridView dgvPr = (DataGridView)tabProducts.TabPages[j].Controls.Find("dgv_MaterialsPr", true)[0];
 
-		private void panelMaterialsInProd_Scroll(object sender, ScrollEventArgs e)
-		{
-			panelMaterials.VerticalScroll.Value = ((Panel)sender).VerticalScroll.Value;
-			panelMaterials_Scroll(panelMaterials, e);
-		}
+					if (dgvPr.Rows[i].Cells[1].Value != null)
+						totalCount += Double.Parse(dgvPr.Rows[i].Cells[1].Value.ToString());
+				}
 
-		private void dgv_Result_Scroll(object sender, ScrollEventArgs e)
-		{
-			int val = dgv_Result.FirstDisplayedScrollingRowIndex * heightMaterial;
-			for (int i = 0; i < tabProducts.TabCount; i++)
-				((Panel)tabProducts.TabPages[i].Controls.Find("panel_materials", true)[0]).VerticalScroll.Value = val;
-			panelMaterials.VerticalScroll.Value = val;
-		}
+				dgv_Result.Rows[i].Cells[0].Value = dgv_Mateials.Rows[i].Cells[0].Value;
+				dgv_Result.Rows[i].Cells[1].Value = totalCount;
+				dgv_Result.Rows[i].Cells[2].Value = Math.Round(totalCount);
 
+				if (dgv_Result.Rows[i].Cells[3].Value != null && dgv_Result.Rows[i].Cells[1].Value != null)
+				{
+					double price = Double.Parse(dgv_Result.Rows[i].Cells[3].Value.ToString());
+					double count = Double.Parse(dgv_Result.Rows[i].Cells[1].Value.ToString());
+					dgv_Result.Rows[i].Cells[4].Value = price * count;
+				}
+			}
+		}
 
 		//Изменение наименования продукта
 		private void cb_nameProduct_SelectedIndexChanged(object sender, EventArgs e)
@@ -532,6 +603,18 @@ namespace WindowsFormsApp1
 			ComboBox cb = (ComboBox)sender;
 			int indMaterial = Int32.Parse(cb.Name.Split('_')[2]);
 			dgv_Result.Rows[indMaterial].Cells[0].Value = cb.Text;
+		}
+
+		private void dgv_Mateials_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+		{
+			if (e.RowIndex >= 0 && e.RowIndex < dgv_Mateials.ColumnCount)
+			{
+				if (e.ColumnIndex == 0 && dgv_Mateials.Rows[e.RowIndex].Cells[0].Value != null)
+				{
+					string nameMaterial = dgv_Mateials.Rows[e.RowIndex].Cells[0].Value.ToString();
+					dgv_Mateials.Rows[e.RowIndex].Cells[1].Value = mater2key[nameMaterial];
+				}
+			}
 		}
 	}
 }
