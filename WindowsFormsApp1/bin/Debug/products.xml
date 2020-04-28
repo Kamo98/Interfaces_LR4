@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<ArrayOfProduct xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Product>
+    <Name>Творожные булочки</Name>
+    <Code>101Б</Code>
+    <Number>1</Number>
+  </Product>
+  <Product>
+    <Name>Шоколадный торт</Name>
+    <Code>104A</Code>
+    <Number>2</Number>
+  </Product>
+  <Product>
+    <Name>Желейный торт</Name>
+    <Code>110A</Code>
+    <Number>3</Number>
+  </Product>
+  <Product>
+    <Name>Тирамису</Name>
+    <Code>100A</Code>
+    <Number>4</Number>
+  </Product>
+  <Product>
+    <Name>Арабские сказки</Name>
+    <Code>31A</Code>
+    <Number>5</Number>
+  </Product>
+  <Product>
+    <Name>Творожные шарики</Name>
+    <Code>206В</Code>
+    <Number>6</Number>
+  </Product>
+</ArrayOfProduct>

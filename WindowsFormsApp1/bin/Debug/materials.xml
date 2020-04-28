@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<ArrayOfMaterial xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Material>
+    <Name>Мука I сорта</Name>
+    <Code>40M</Code>
+  </Material>
+   <Material>
+    <Name>Мука II сорта</Name>
+    <Code>40M2</Code>
+  </Material>
+   <Material>
+    <Name>Мука III сорта</Name>
+    <Code>40M3</Code>
+  </Material>
+  <Material>
+    <Name>Яйца высш кат</Name>
+    <Code>41M0</Code>
+  </Material>
+  <Material>
+    <Name>Яйца 1 кат</Name>
+    <Code>41M1</Code>
+  </Material>
+  <Material>
+    <Name>Яйца 2 кат</Name>
+    <Code>41M2</Code>
+  </Material>
+  <Material>
+    <Name>Сахар</Name>
+    <Code>42M</Code>
+  </Material>
+  <Material>
+    <Name>Ванилин</Name>
+    <Code>43M</Code>
+  </Material>
+  <Material>
+    <Name>Разрыхлитель</Name>
+    <Code>44M</Code>
+  </Material>
+  <Material>
+    <Name>Каккао-порошок</Name>
+    <Code>45M</Code>
+  </Material>
+  <Material>
+    <Name>Творог</Name>
+    <Code>46M</Code>
+  </Material>
+  <Material>
+    <Name>Сливки</Name>
+    <Code>47M</Code>
+  </Material>
+</ArrayOfMaterial>
